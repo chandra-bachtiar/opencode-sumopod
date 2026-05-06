@@ -16,72 +16,37 @@ Uses `@ai-sdk/openai-compatible` since Sumopod exposes an OpenAI-compatible API.
 }
 ```
 
-OpenCode automatically installs the plugin via Bun on startup.
+OpenCode automatically installs the plugin via Bun on startup. **No manual provider config needed** — the plugin registers it automatically.
 
-### 2. Register the Sumopod provider
+### 2. Connect your API key via TUI
 
-Add the `provider` block to your `opencode.json`:
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-
-  "plugin": ["opencode-sumopod"],
-
-  "provider": {
-    "sumopod": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Sumopod",
-      "options": {
-        "baseURL": "https://api.sumopod.com/v1",
-        "apiKey": "{env:SUMOPOD_API_KEY}"
-      },
-      "models": {
-        "claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6",
-          "limit": { "context": 1000000, "output": 65536 }
-        }
-      }
-    }
-  }
-}
-```
-
-See the full model list below and pick the ones you want to use.
-
-### 3. Set your API key
-
-**Option A — via `/connect` (recommended)**
-
-Run the following command inside the OpenCode TUI:
+Run OpenCode, then:
 
 ```
 /connect
 ```
 
-Select **Other** → enter provider ID `sumopod` → paste your API key.
+Search for **Sumopod** → enter your API key → done.
 
-The key is saved automatically to `~/.local/share/opencode/auth.json`.
-
-**Option B — environment variable**
-
-```bash
-export SUMOPOD_API_KEY=sk-xxxxxxxxxx
-```
-
-Or add it permanently to your shell profile:
-
-```bash
-echo 'export SUMOPOD_API_KEY=sk-xxxxxxxxxx' >> ~/.zshrc
-```
-
-### 4. Select a model
+### 3. Select a model
 
 ```
 /models
 ```
 
-The **Sumopod** provider and all configured models will appear in the list.
+All Sumopod models will appear in the list.
+
+---
+
+## What this plugin does
+
+1. **Registers in `/connect`** — Sumopod appears in the TUI provider list so users can enter their API key without editing any files.
+
+2. **Auto-configures the provider** — Injects the full provider + model list via the `config` hook, so you don't need to manually add a `provider.sumopod` block to `opencode.json`.
+
+3. **Env injection** — Ensures `SUMOPOD_API_KEY` is available in every shell OpenCode spawns.
+
+4. **TUI toasts** — Shows a notification when a Sumopod session starts or if a connection error occurs.
 
 ---
 
@@ -136,52 +101,24 @@ The **Sumopod** provider and all configured models will appear in the list.
 | `gpt-5.1-codex-mini` | GPT-5.1 Codex Mini | 272K | OpenAI |
 | `gpt-5.2` | GPT-5.2 | 272K | OpenAI |
 | `gpt-5.2-codex` | GPT-5.2 Codex | 272K | OpenAI |
-| `text-embedding-3-large` | Text Embedding 3 Large | 8K | OpenAI |
-| `text-embedding-3-small` | Text Embedding 3 Small | 8K | OpenAI |
 | `glm-5` | GLM-5 | 200K | Z.AI |
 | `glm-5-turbo` | GLM-5 Turbo | 200K | Z.AI |
 | `glm-5.1` | GLM-5.1 | 200K | Z.AI |
-
-The full `opencode.example.json` in this repo has all models pre-configured with correct context limits.
-
----
-
-## Configuration Options
-
-| Field | Description |
-|---|---|
-| `baseURL` | Sumopod API endpoint (`/v1/chat/completions`) |
-| `apiKey` | API key — use `{env:SUMOPOD_API_KEY}` to read from env |
-| `headers` | Additional headers sent with every request |
-| `models.<id>.name` | Display name shown in the model picker |
-| `models.<id>.limit.context` | Maximum input tokens |
-| `models.<id>.limit.output` | Maximum output tokens |
-
----
-
-## What this plugin does
-
-1. **Env injection** — Ensures `SUMOPOD_API_KEY` is available in every shell OpenCode spawns via the `shell.env` hook, so the `{env:SUMOPOD_API_KEY}` reference in your config always resolves.
-
-2. **Status logging** — Logs an info message when the plugin loads successfully, or a warning if the API key is missing.
-
-3. **TUI toasts** — Shows a notification when a Sumopod session starts or if a connection error occurs.
 
 ---
 
 ## Troubleshooting
 
-**Sumopod models don't appear in `/models`**
-- Make sure the `provider.sumopod` block exists in `opencode.json`
-- Run `opencode auth list` to verify the credentials are stored
+**Sumopod not showing up in `/connect`**
+- Make sure the plugin is listed in `opencode.json` and OpenCode has restarted at least once to install it
+- Check plugin loaded: look for `INFO service=plugin path=opencode-sumopod` in the logs
+
+**Models not showing in `/models`**
+- Run `opencode auth list` to verify credentials are stored
+- Try clearing the plugin cache: `rm -rf ~/.cache/opencode/node_modules/opencode-sumopod` then restart
 
 **401 Unauthorized**
-- Re-run `/connect` and enter the correct API key
-- Or re-export the `SUMOPOD_API_KEY` environment variable
-
-**Connection error**
-- Verify the `baseURL` matches the Sumopod API documentation
-- Check your internet connection and firewall rules
+- Re-run `/connect`, search for **Sumopod**, and re-enter your API key
 
 ---
 
