@@ -117,7 +117,7 @@ function install() {
     npm: "@ai-sdk/openai-compatible",
     name: "Sumopod",
     options: {
-      baseURL: "https://api.sumopod.com/v1",
+      baseURL: "https://ai.sumopod.com/v1",
       apiKey: "{env:SUMOPOD_API_KEY}",
     },
     models: MODELS,
