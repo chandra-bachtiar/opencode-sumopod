@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /**
  * opencode-sumopod installer
- * Writes plugin + provider config to the global OpenCode config file.
  *
  * Usage:
  *   npx opencode-sumopod install
@@ -70,6 +69,7 @@ const MODELS = {
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 const PLUGIN_NAME = "opencode-sumopod";
+const BASE_URL = "https://ai.sumopod.com/v1";
 const CONFIG_DIR = join(homedir(), ".config", "opencode");
 const CONFIG_FILE = join(CONFIG_DIR, "opencode.json");
 
@@ -105,23 +105,51 @@ function install() {
     console.log(`  ✓  Plugin "${PLUGIN_NAME}" already in plugin list`);
   }
 
-  // 2. Add provider config
+  // 2. Add or MERGE provider config — never wipe user customizations
   if (!config.provider) config.provider = {};
-  if (config.provider.sumopod) {
-    console.log(`  ✓  Provider "sumopod" already configured — updating models`);
+
+  const existing = config.provider.sumopod;
+
+  if (existing) {
+    // Update baseURL if outdated
+    if (!existing.options) existing.options = {};
+    const prevURL = existing.options.baseURL;
+    if (prevURL !== BASE_URL) {
+      existing.options.baseURL = BASE_URL;
+      console.log(`  ✅ Updated baseURL: ${prevURL ?? "(none)"} → ${BASE_URL}`);
+    } else {
+      console.log(`  ✓  baseURL already up to date`);
+    }
+
+    // Add new models only — never overwrite user's existing/custom model entries
+    if (!existing.models) existing.models = {};
+    let added = 0;
+    for (const [id, model] of Object.entries(MODELS)) {
+      if (!existing.models[id]) {
+        existing.models[id] = model;
+        added++;
+      }
+    }
+    if (added > 0) {
+      console.log(`  ✅ Added ${added} new model(s) — existing model configs untouched`);
+    } else {
+      console.log(`  ✓  All models already present`);
+    }
+
+    config.provider.sumopod = existing;
   } else {
+    // Fresh install
+    config.provider.sumopod = {
+      npm: "@ai-sdk/openai-compatible",
+      name: "Sumopod",
+      options: {
+        baseURL: BASE_URL,
+        apiKey: "{env:SUMOPOD_API_KEY}",
+      },
+      models: MODELS,
+    };
     console.log(`  ✅ Registered Sumopod provider with ${Object.keys(MODELS).length} models`);
   }
-
-  config.provider.sumopod = {
-    npm: "@ai-sdk/openai-compatible",
-    name: "Sumopod",
-    options: {
-      baseURL: "https://ai.sumopod.com/v1",
-      apiKey: "{env:SUMOPOD_API_KEY}",
-    },
-    models: MODELS,
-  };
 
   writeConfig(config);
 
@@ -150,14 +178,12 @@ function uninstall() {
   const config = readConfig();
   let changed = false;
 
-  // Remove plugin entry
   if (Array.isArray(config.plugin) && config.plugin.includes(PLUGIN_NAME)) {
     config.plugin = config.plugin.filter((p) => p !== PLUGIN_NAME);
     console.log(`  ✅ Removed "${PLUGIN_NAME}" from plugin list`);
     changed = true;
   }
 
-  // Remove provider config
   if (config.provider?.sumopod) {
     delete config.provider.sumopod;
     console.log(`  ✅ Removed Sumopod provider config`);
@@ -175,7 +201,7 @@ function uninstall() {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ✅ opencode-sumopod uninstalled.
 
-  To also remove the cached API key:
+  To also remove the stored API key:
     opencode auth remove sumopod
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `);
