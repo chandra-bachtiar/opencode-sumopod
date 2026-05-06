@@ -1,6 +1,6 @@
 {
     "name": "opencode-sumopod",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "OpenCode plugin for AI Sumopod (OpenAI-compatible)",
     "type": "module",
     "main": "index.js",
