@@ -1,0 +1,40 @@
+{
+    "name": "opencode-sumopod",
+    "version": "1.0.0",
+    "description": "OpenCode plugin for AI Sumopod (OpenAI-compatible)",
+    "type": "module",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "files": [
+        "index.js",
+        "index.d.ts",
+        "README.md"
+    ],
+    "keywords": [
+        "opencode",
+        "opencode-plugin",
+        "sumopod",
+        "ai-provider",
+        "llm"
+    ],
+    "license": "MIT",
+    "peerDependencies": {
+        "@opencode-ai/plugin": "*"
+    },
+    "peerDependenciesMeta": {
+        "@opencode-ai/plugin": {
+            "optional": true
+        }
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/chandra-bachtiar/opencode-sumopod"
+    },
+    "homepage": "https://github.com/chandra-bachtiar/opencode-sumopod#readme",
+    "bugs": {
+        "url": "https://github.com/chandra-bachtiar/opencode-sumopod/issues"
+    }
+}
