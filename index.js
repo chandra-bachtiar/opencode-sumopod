@@ -2,6 +2,10 @@
  * opencode-sumopod
  * OpenCode plugin for the Sumopod AI provider.
  * Uses @ai-sdk/openai-compatible since Sumopod exposes an OpenAI-compatible API.
+ *
+ * OpenCode v1.3.8+ requires:
+ *   - "oc-plugin": ["server"] in package.json
+ *   - export const server = Plugin (instead of bare export)
  */
 
 const PROVIDER_ID = "sumopod";
@@ -61,7 +65,7 @@ const MODELS = {
 };
 
 /** @type {import("@opencode-ai/plugin").Plugin} */
-export const SumopodPlugin = async ({ client }) => {
+const SumopodPlugin = async ({ client }) => {
   const apiKey = process.env.SUMOPOD_API_KEY;
 
   if (apiKey) {
@@ -79,24 +83,11 @@ export const SumopodPlugin = async ({ client }) => {
   }
 
   return {
-    /**
-     * Register Sumopod in the /connect TUI dialog.
-     * Users can search for "Sumopod" and enter their API key directly from the TUI.
-     */
     auth: {
       provider: PROVIDER_ID,
-      methods: [
-        {
-          type: "api",
-          label: "API Key",
-        },
-      ],
+      methods: [{ type: "api", label: "API Key" }],
     },
 
-    /**
-     * Auto-register the provider config so users don't need to manually
-     * add the provider block to opencode.json.
-     */
     config: async (config) => {
       if (!config.provider) config.provider = {};
       if (!config.provider[PROVIDER_ID]) {
@@ -112,19 +103,12 @@ export const SumopodPlugin = async ({ client }) => {
       }
     },
 
-    /**
-     * Inject SUMOPOD_API_KEY into every shell environment so that
-     * the {env:SUMOPOD_API_KEY} reference resolves correctly.
-     */
     "shell.env": async (input, output) => {
       if (apiKey) {
         output.env.SUMOPOD_API_KEY = apiKey;
       }
     },
 
-    /**
-     * Show TUI toasts on session start or connection error.
-     */
     event: async ({ event }) => {
       if (event.type === "session.created") {
         const modelId = event.properties?.modelId ?? "";
@@ -134,7 +118,6 @@ export const SumopodPlugin = async ({ client }) => {
           });
         }
       }
-
       if (event.type === "session.error") {
         const err = String(event.properties?.error ?? "");
         if (err.toLowerCase().includes(PROVIDER_ID)) {
@@ -147,4 +130,8 @@ export const SumopodPlugin = async ({ client }) => {
   };
 };
 
+// OpenCode v1.3.8+ requires named export "server" instead of bare default export
+export const server = SumopodPlugin;
+
+// Backward compatibility for older OpenCode versions
 export default SumopodPlugin;
