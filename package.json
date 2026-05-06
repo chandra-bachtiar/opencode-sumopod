@@ -1,9 +1,15 @@
 {
     "name": "opencode-sumopod",
-    "version": "1.0.2",
+    "version": "2.0.0",
     "description": "OpenCode plugin for AI Sumopod (OpenAI-compatible)",
     "type": "module",
     "main": "index.js",
+    "bin": {
+        "opencode-sumopod": "./install.js"
+    },
+    "exports": {
+        ".": "./index.js"
+    },
     "types": "index.d.ts",
     "oc-plugin": [
         "server"
@@ -11,6 +17,7 @@
     "files": [
         "index.js",
         "index.d.ts",
+        "install.js",
         "README.md"
     ],
     "keywords": [

@@ -1,56 +1,50 @@
 # opencode-sumopod
 
-[OpenCode](https://opencode.ai) plugin that adds **Sumopod** as an AI provider.
-Uses `@ai-sdk/openai-compatible` since Sumopod exposes an OpenAI-compatible API.
+[OpenCode](https://opencode.ai) plugin for **Sumopod** — a multi-model AI provider.
 
 ---
 
-## Installation
+## Quick Start
 
-### 1. Add the plugin to `opencode.json`
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-sumopod"]
-}
+```bash
+npx opencode-sumopod install
 ```
 
-OpenCode automatically installs the plugin via Bun on startup. **No manual provider config needed** — the plugin registers it automatically.
+That's it. The installer writes the provider config (with all 50+ models) to your global OpenCode config automatically.
 
-### 2. Connect your API key via TUI
-
-Run OpenCode, then:
-
-```
-/connect
-```
-
-Search for **Sumopod** → enter your API key → done.
-
-### 3. Select a model
-
-```
-/models
-```
-
-All Sumopod models will appear in the list.
+Then:
+1. Open `opencode`
+2. Run `/connect` → search **Sumopod** → enter your API key
+3. Run `/models` → pick any Sumopod model
+4. Start coding!
 
 ---
 
-## What this plugin does
+## What the installer does
 
-1. **Registers in `/connect`** — Sumopod appears in the TUI provider list so users can enter their API key without editing any files.
+Writes the following to `~/.config/opencode/opencode.json`:
 
-2. **Auto-configures the provider** — Injects the full provider + model list via the `config` hook, so you don't need to manually add a `provider.sumopod` block to `opencode.json`.
+- Adds `"opencode-sumopod"` to the `plugin` list
+- Registers the full Sumopod provider config with all available models
 
-3. **Env injection** — Ensures `SUMOPOD_API_KEY` is available in every shell OpenCode spawns.
-
-4. **TUI toasts** — Shows a notification when a Sumopod session starts or if a connection error occurs.
+No manual file editing required.
 
 ---
 
-## Available Models
+## Uninstall
+
+```bash
+npx opencode-sumopod uninstall
+```
+
+To also remove the stored API key:
+```bash
+opencode auth remove sumopod
+```
+
+---
+
+## Available Models (50+)
 
 | Model ID | Display Name | Context | Provider |
 |---|---|---|---|
@@ -60,65 +54,38 @@ All Sumopod models will appear in the list.
 | `claude-sonnet-4-6` | Claude Sonnet 4.6 | 1M | Anthropic |
 | `claude-opus-4-6` | Claude Opus 4.6 | 1M | Anthropic |
 | `deepseek-v3-2` | DeepSeek V3.2 | 96K | BytePlus |
-| `glm-4-7` | GLM 4.7 | 200K | BytePlus |
 | `kimi-k2-5-260127` | Kimi K2.5 | 256K | BytePlus |
 | `seed-2-0-code` | Seed 2.0 Code | 256K | BytePlus |
-| `seed-2-0-lite` | Seed 2.0 Lite | 256K | BytePlus |
-| `seed-2-0-mini` | Seed 2.0 Mini | 256K | BytePlus |
 | `seed-2-0-pro` | Seed 2.0 Pro | 256K | BytePlus |
-| `nvidia/nemotron-3-nano-30b` | NVIDIA Nemotron 3 Nano 30B | 128K | Cloudeka |
-| `openai/gpt-oss-20b` | OpenAI GPT OSS 20B | 128K | Cloudeka |
-| `qwen/qwen3-30b-a3b-instruct-2507` | Qwen3 30B A3B Instruct | 262K | Cloudeka |
-| `zai/glm-4.7-fp8` | GLM 4.7 FP8 | 200K | Cloudeka |
 | `deepseek-v4-flash` | DeepSeek V4 Flash | 1M | DeepSeek |
 | `deepseek-v4-pro` | DeepSeek V4 Pro | 1M | DeepSeek |
-| `gemini/gemini-2.0-flash` | Gemini 2.0 Flash | 1M | Google |
-| `gemini/gemini-2.0-flash-lite` | Gemini 2.0 Flash Lite | 1M | Google |
 | `gemini/gemini-2.5-flash` | Gemini 2.5 Flash | 1M | Google |
-| `gemini/gemini-2.5-flash-lite` | Gemini 2.5 Flash Lite | 1M | Google |
 | `gemini/gemini-2.5-pro` | Gemini 2.5 Pro | 1M | Google |
-| `gemini/gemini-3-flash-preview` | Gemini 3 Flash (Preview) | 1M | Google |
-| `gemini/gemini-3-pro-preview` | Gemini 3 Pro (Preview) | 1M | Google |
-| `gemini/gemini-3.1-flash-lite-preview` | Gemini 3.1 Flash Lite (Preview) | 1M | Google |
-| `gemini/gemini-3.1-pro-preview` | Gemini 3.1 Pro (Preview) | 1M | Google |
-| `mimo-v2-flash` | Mimo V2 Flash | 262K | Mimo |
-| `mimo-v2-omni` | Mimo V2 Omni | 262K | Mimo |
-| `mimo-v2-pro` | Mimo V2 Pro | 1M | Mimo |
-| `mimo-v2.5` | Mimo V2.5 | 1M | Mimo |
-| `mimo-v2.5-pro` | Mimo V2.5 Pro | 1M | Mimo |
-| `MiniMax-M2.7-highspeed` | MiniMax M2.7 Highspeed | 200K | MiniMax |
-| `kimi-k2.6` | Kimi K2.6 | 262K | Moonshot |
+| `gemini/gemini-3-flash-preview` | Gemini 3 Flash | 1M | Google |
+| `gemini/gemini-3-pro-preview` | Gemini 3 Pro | 1M | Google |
 | `gpt-4.1` | GPT-4.1 | 1M | OpenAI |
-| `gpt-4.1-mini` | GPT-4.1 Mini | 1M | OpenAI |
-| `gpt-4.1-nano` | GPT-4.1 Nano | 1M | OpenAI |
-| `gpt-4o` | GPT-4o | 128K | OpenAI |
-| `gpt-4o-mini` | GPT-4o Mini | 128K | OpenAI |
 | `gpt-5` | GPT-5 | 272K | OpenAI |
-| `gpt-5-mini` | GPT-5 Mini | 272K | OpenAI |
-| `gpt-5-nano` | GPT-5 Nano | 272K | OpenAI |
-| `gpt-5.1` | GPT-5.1 | 272K | OpenAI |
 | `gpt-5.1-codex` | GPT-5.1 Codex | 272K | OpenAI |
-| `gpt-5.1-codex-mini` | GPT-5.1 Codex Mini | 272K | OpenAI |
-| `gpt-5.2` | GPT-5.2 | 272K | OpenAI |
 | `gpt-5.2-codex` | GPT-5.2 Codex | 272K | OpenAI |
+| `kimi-k2.6` | Kimi K2.6 | 262K | Moonshot |
 | `glm-5` | GLM-5 | 200K | Z.AI |
-| `glm-5-turbo` | GLM-5 Turbo | 200K | Z.AI |
 | `glm-5.1` | GLM-5.1 | 200K | Z.AI |
+| *(and 30+ more)* | | | |
 
 ---
 
 ## Troubleshooting
 
-**Sumopod not showing up in `/connect`**
-- Make sure the plugin is listed in `opencode.json` and OpenCode has restarted at least once to install it
-- Check plugin loaded: look for `INFO service=plugin path=opencode-sumopod` in the logs
+**Models not showing in `/models` after install**
+- Make sure you ran the installer: `npx opencode-sumopod install`
+- Restart opencode after installing
+- Confirm API key is set: `opencode auth list`
 
-**Models not showing in `/models`**
-- Run `opencode auth list` to verify credentials are stored
-- Try clearing the plugin cache: `rm -rf ~/.cache/opencode/node_modules/opencode-sumopod` then restart
-
-**401 Unauthorized**
-- Re-run `/connect`, search for **Sumopod**, and re-enter your API key
+**Clear plugin cache if needed**
+```bash
+rm -rf ~/.cache/opencode/node_modules/opencode-sumopod
+```
+Then restart opencode.
 
 ---
 
