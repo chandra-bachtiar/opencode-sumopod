@@ -8,30 +8,20 @@
 
 /** @type {import("@opencode-ai/plugin").Plugin} */
 const SumopodPlugin = async ({ client }) => {
-  const apiKey = process.env.SUMOPOD_API_KEY;
-
   await client.app.log({
     body: {
       service: "opencode-sumopod",
-      level: apiKey ? "info" : "warn",
-      message: apiKey
-        ? "Sumopod provider ready"
-        : "SUMOPOD_API_KEY not set — run /connect and search for Sumopod",
+      level: "info",
+      message: "Sumopod provider ready — use /connect to set your API key",
     },
   });
 
   return {
-    /**
-     * Inject SUMOPOD_API_KEY into every shell so {env:SUMOPOD_API_KEY}
-     * in the provider config resolves correctly.
-     */
-    "shell.env": async (input, output) => {
-      if (apiKey) output.env.SUMOPOD_API_KEY = apiKey;
+    auth: {
+      provider: "sumopod",
+      methods: [{ type: "api", label: "API Key" }],
     },
 
-    /**
-     * Toast notifications for Sumopod sessions.
-     */
     event: async ({ event }) => {
       if (event.type === "session.created") {
         const modelId = event.properties?.modelId ?? "";
@@ -53,6 +43,5 @@ const SumopodPlugin = async ({ client }) => {
   };
 };
 
-// OpenCode v1.3.8+ requires named "server" export
 export const server = SumopodPlugin;
 export default SumopodPlugin;

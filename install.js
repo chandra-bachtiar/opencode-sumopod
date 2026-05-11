@@ -144,7 +144,6 @@ function install() {
       name: "Sumopod",
       options: {
         baseURL: BASE_URL,
-        apiKey: "{env:SUMOPOD_API_KEY}",
       },
       models: MODELS,
     };
